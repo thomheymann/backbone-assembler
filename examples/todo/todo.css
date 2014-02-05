@@ -1,0 +1,114 @@
+*,
+*:before,
+*:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Verdana, sans-serif;
+    color: #000;
+    font-size: 12px;
+}
+
+.container {
+    width: 470px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: normal;
+    font-size: 24px;
+    font-style: normal;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding-bottom: 9px;
+    border-bottom: 1px solid #bbb;
+    margin-bottom: 25px;
+}
+
+form input[type=text] {
+    width: 100%;
+    padding: 5px;
+}
+
+form,
+ul {
+    padding: 0;
+    text-align: left;
+    margin: 25px 0;
+}
+li {
+    list-style: none;
+    position: relative;
+}
+li label {
+    display: block;
+    line-height: 33px;
+}
+li input[type=checkbox] {
+    margin-right: 10px;
+}
+li.is-done label {
+    text-decoration: line-through;
+}
+li button.delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+}
+li:hover button.delete {
+    display: inline-block;
+}
+
+button.clear, button.delete {
+    color: #fff;
+    font-size: 12px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background-color: #000;
+    border: 1px solid #000;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 8px 13px;
+    overflow: visible;
+}
+button.clear:hover, button.delete:hover {
+    background-color: #333;
+    border-color: #333;
+    text-decoration: none;
+}
+button.clear:hover:disabled, button.delete:hover:disabled {
+    background-color: #000;
+}
+button.clear:disabled, button.delete:disabled {
+    color: #eee;
+    cursor: default;
+}
+button.delete {
+    color: #333;
+    text-shadow: -1px 1px 0px #fff;
+    background: #fff;
+    border-color: #ccc;
+}
+button.delete:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+}
+button.delete:hover:disabled {
+    background: #fff;
+}
+button.delete:disabled {
+    color: #ccc;
+}

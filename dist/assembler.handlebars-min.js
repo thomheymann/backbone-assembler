@@ -1,0 +1,2 @@
+(function(e,n){if(typeof define==="function"&&define.amd){define(["underscore","handlebars"],n)}else if(typeof exports==="object"){module.exports=n(require("underscore"),require("handlebars"))}else{e.Assembler.HandlebarsMixin=n(e._,e.Handlebars)}})(this,function(e,n){return{setTemplate:function(i){if(!e.isFunction(i)){i=n.compile(i)}this.template=i;return this}}});
+//# sourceMappingURL=dist/assembler.handlebars-min.map

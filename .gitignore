@@ -1,0 +1,44 @@
+# Node
+npm-debug.log
+node_modules
+
+# Bower
+bower_components
+
+# OS X 
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+.*
+!.gitignore
+!.git*
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Sublime
+*.sublime-workspace
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Vim
+.*.s[a-w][a-z]
+*~
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/

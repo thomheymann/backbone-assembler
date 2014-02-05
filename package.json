@@ -1,0 +1,34 @@
+{
+    "name": "backbone-assembler",
+    "version": "0.1.0",
+    "description": "Plugin for Backbone that makes it easy to manage nested views", 
+    "keywords": ["backbone", "nested", "view", "layout", "server", "client", "browser"],
+    "author": "Thomas Heymann <thomas.heymann@net-a-porter.com",
+    "contributors": [
+        "Thomas Lillington <thomas.lillington@net-a-porter.com>",
+        "Thomas Minton <thomas.minton@net-a-porter.com>"
+    ],
+    "license": "Apache",
+    "dependencies": {
+        "backbone": "1.0.x",
+        "underscore"  : "1.5.x",
+        "handlebars": "1.0.x"
+    },
+    "devDependencies": {
+        "uglify-js": "2.4.x",
+        "phantomjs": "1.9.x",
+        "mocha-phantomjs": "3.0.x",
+        "chai": "1.8.x",
+        "sinon": "1.7.x",
+        "sinon-chai": "2.4.x"
+    },
+    "scripts": {
+        "test": "mocha-phantomjs test/index.html",
+        "build": "mkdir -p dist && uglifyjs assembler.js --mangle --source-map dist/assembler-min.map -o dist/assembler-min.js && uglifyjs assembler.handlebars.js --mangle --source-map dist/assembler.handlebars-min.map -o dist/assembler.handlebars-min.js"
+    },
+    "main": "assembler.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NET-A-PORTER/backbone-assembler.git"
+    }
+}
