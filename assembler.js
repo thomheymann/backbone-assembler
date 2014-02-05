@@ -1,12 +1,12 @@
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['backbone', 'underscore', 'jquery'], factory);
+        define(['backbone', 'underscore'], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('backbone'), require('underscore'), require('jquery'));
+        module.exports = factory(require('backbone'), require('underscore'));
     } else {
-        root.Assembler = factory(root.Backbone, root._, root.$);
+        root.Assembler = factory(root.Backbone, root._);
     }
-}(this, function(Backbone, _, $) {
+}(this, function(Backbone, _) {
     var Assembler = {};
 
     Assembler.View = Backbone.View.extend({
@@ -99,7 +99,7 @@
             if (this.collection) {
                 promises.push(this.collection.fetch(options));
             }
-            return this.promiseCoupler($.when.apply($.when, promises), options);
+            return this.promiseCoupler(Backbone.$.when.apply(Backbone.$.when, promises), options);
         },
         promiseCoupler: function(promise, options) {
             return promise;
@@ -307,7 +307,7 @@
                     layoutPromises.push(view.ready());
                 }, this);
                 return basePromise.then(function() {
-                    return $.when.apply($.when, layoutPromises);
+                    return Backbone.$.when.apply(Backbone.$.when, layoutPromises);
                 });
             },
             swapView: function(destination, viewToAdd) {
