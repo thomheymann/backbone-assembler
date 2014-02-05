@@ -67,7 +67,7 @@ Assembler exposes the following classes:
 * `Assembler.LayoutView` - Used to create layouts
 * `Assembler.ListView` - Used to create lists and composite views (templated lists)
 
-To find out more check out the [full documentation](#api) below or have a look at the [example project](tree/master/examples) in the repo. 
+To find out more check out the [full documentation](#api) below or have a look at the [example project](examples/todo) in the repo. 
 
 
 ## Dependencies
