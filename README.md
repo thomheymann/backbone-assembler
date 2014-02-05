@@ -89,6 +89,10 @@ Or install using bower:
 
     $ bower install backbone-assembler
 
+Mixins: 
+
+* [backbone-assembler-handlebars](https://github.com/NET-A-PORTER/backbone-assembler-handlebars)
+
 
 ## Test
 
@@ -192,7 +196,7 @@ var HandlebarsView = Assembler.View.extend({
 });
 ```
 
-Or use the Handlebars mixin that comes with Assembler:
+Or use the [Handlebars mixin](https://github.com/NET-A-PORTER/backbone-assembler-handlebars):
 
 ```javascript
 _.extend(Assembler.View.prototype, Assembler.HandlebarsMixin);

@@ -10,9 +10,8 @@
     ],
     "license": "Apache",
     "dependencies": {
-        "backbone": "1.0.x",
-        "underscore"  : "1.5.x",
-        "handlebars": "1.0.x"
+        "backbone": ">= 1.0",
+        "underscore"  : ">= 1.5"
     },
     "devDependencies": {
         "uglify-js": "2.4.x",
@@ -24,7 +23,7 @@
     },
     "scripts": {
         "test": "mocha-phantomjs test/index.html",
-        "build": "mkdir -p dist && uglifyjs assembler.js --mangle --source-map dist/assembler-min.map -o dist/assembler-min.js && uglifyjs assembler.handlebars.js --mangle --source-map dist/assembler.handlebars-min.map -o dist/assembler.handlebars-min.js"
+        "build": "mkdir -p dist && uglifyjs assembler.js --mangle --source-map dist/assembler-min.map -o dist/assembler-min.js"
     },
     "main": "assembler.js",
     "repository": {

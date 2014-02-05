@@ -3,9 +3,8 @@
     "version": "0.1.1",
     "main": "assembler.js",
     "dependencies": {
-        "backbone": "1.0.x",
-        "underscore": "1.5.x",
-        "handlebars": "1.0.x"
+        "backbone": ">= 1.0",
+        "underscore": ">= 1.5"
     },
-    "ignore": ["*-min.js", "*-min.map", "examples", "test"]
+    "ignore": ["dist", "examples", "test"]
 }

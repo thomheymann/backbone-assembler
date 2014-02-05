@@ -1,15 +1,15 @@
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['underscore', 'handlebars'], factory);
+        define(['handlebars'], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('underscore'), require('handlebars'));
+        module.exports = factory(require('handlebars'));
     } else {
-        root.Assembler.HandlebarsMixin = factory(root._, root.Handlebars);
+        root.Assembler.HandlebarsMixin = factory(root.Handlebars);
     }
-}(this, function(_, Handlebars) {
+}(this, function(Handlebars) {
     return {
         setTemplate: function(template) {
-            if (!_.isFunction(template)) {
+            if (typeof template !== 'function') {
                 template = Handlebars.compile(template);
             }
             this.template = template;
