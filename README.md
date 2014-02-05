@@ -77,7 +77,22 @@ To find out more check out the [full documentation](#api) below or have a look a
 * [jquery](http://jquery.com) (>= 1.10) or [cheerio](http://matthewmueller.github.io/cheerio/) (>= 0.12)
 
 
-## Tests
+## Install
+
+Download: [Latest release](https://github.com/NET-A-PORTER/backbone-assembler/releases)
+
+Or install using npm:
+
+    $ npm install backbone-assembler
+
+Or install using bower:
+
+    $ bower install backbone-assembler
+
+
+## Test
+
+Open the [test runner](test) in your browser or run using PhantomJS:
 
     $ npm install
     $ npm test
