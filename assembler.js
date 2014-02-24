@@ -136,7 +136,11 @@
         renderElement: function(options) {
             options || (options = {});
             if (options.force || !_.result(this, 'lazy') || !this._rendered) {
-                this.$el.html(this.toHTML());
+                // Can't use `.html()` here as there is a bug in IE7-11 which occurs when innerHTML'ing a DOM element
+                // while trying to keep a reference to one of its child nodes. The reference is kept but IE trashes the
+                // node's contents so you're left with an empty tag. This only happens when using innerHTML - direct
+                // DOM manipulation is working as expected.
+                this.$el.empty().append(this.toHTML());
                 this._rendered = true;
             }
             return this;
