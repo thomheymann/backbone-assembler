@@ -365,8 +365,6 @@ var AccordionItemView = Assembler.View.extend({
 
 Returns first child view found at `destination`. 
 
-Alternatively (in case of list views) pass in the model of the item view. 
-
 #### .addView(destination, view)
 
 Adds `view` to the layout at `destination`. 
@@ -375,7 +373,7 @@ Adds `view` to the layout at `destination`.
 
 Removes first child view found at `destination` from the layout. 
 
-Alternatively pass in the view instance to be removed or (in case of list views) the model of the item view. 
+Alternatively pass in the view instance to be removed. 
 
 #### .resetViews(views)
 
@@ -469,6 +467,8 @@ Override this property to change the target element. (Note: Insert method should
 #### .getItemView(model)
 
 Returns the item view that belongs to the passed `model`.
+
+Alternatively pass in the index of the item view. 
 
 #### .createItemView(model)
 

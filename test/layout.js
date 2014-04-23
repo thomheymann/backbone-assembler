@@ -223,14 +223,14 @@ describe('Assembler.LayoutView', function() {
             layoutView.addView(someMoreViews[1].destination, someMoreViews[1].view);
             layoutView.render();
 
-            layoutView.partial('append', '.destination', 0, 3)[0].should.eql(viewToRemove.$el[0]);
-            layoutView.partial('append', '.destination', 1, 3)[0].should.eql(someMoreViews[0].view.$el[0]);
-            layoutView.partial('append', '.destination', 2, 3)[0].should.eql(someMoreViews[1].view.$el[0]);
+            layoutView._partial('append', '.destination', 0, 3)[0].should.eql(viewToRemove.$el[0]);
+            layoutView._partial('append', '.destination', 1, 3)[0].should.eql(someMoreViews[0].view.$el[0]);
+            layoutView._partial('append', '.destination', 2, 3)[0].should.eql(someMoreViews[1].view.$el[0]);
 
             layoutView.removeView(viewToRemove);
 
-            layoutView.partial('append', '.destination', 0, 2)[0].should.eql(someMoreViews[0].view.$el[0]);
-            layoutView.partial('append', '.destination', 1, 2)[0].should.eql(someMoreViews[1].view.$el[0]);
+            layoutView._partial('append', '.destination', 0, 2)[0].should.eql(someMoreViews[0].view.$el[0]);
+            layoutView._partial('append', '.destination', 1, 2)[0].should.eql(someMoreViews[1].view.$el[0]);
         });
 
         it('should undelegate events from the view', function() {
@@ -348,7 +348,7 @@ describe('Assembler.LayoutView', function() {
         });
     });
 
-    describe('.partial()', function() {
+    describe('._partial()', function() {
         var selector, index, total, $insert1, $insert2;
         beforeEach(function() {
             layoutView = new LayoutView({
@@ -366,63 +366,63 @@ describe('Assembler.LayoutView', function() {
 
         it('should replace the inner of $el', function() {
             var method = 'inner';
-            layoutView.partial(method, selector, index, total, $insert1);
+            layoutView._partial(method, selector, index, total, $insert1);
             layoutView.$el.html().should.eql('<div class="destination"><div class="test1"></div></div>');
 
-            layoutView.partial(method, selector, index+1, total, $insert2);
+            layoutView._partial(method, selector, index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="destination"><div class="test2"></div></div>');
         });
 
         it('should add the view to outer', function() {
             var method = 'outer';
 
-            layoutView.partial(method, selector, index, total, $insert1);
+            layoutView._partial(method, selector, index, total, $insert1);
             layoutView.$el.html().should.eql('<div class="test1"></div>');
 
-            layoutView.partial(method, selector, index+1, total, $insert2);
+            layoutView._partial(method, selector, index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="test1"></div>');
 
-            layoutView.partial(method, '.test1', index+1, total, $insert2);
+            layoutView._partial(method, '.test1', index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="test2"></div>');
         });
 
         it('should add the view by prepend', function() {
             var method = 'prepend';
 
-            layoutView.partial(method, selector, index, total, $insert1);
+            layoutView._partial(method, selector, index, total, $insert1);
             layoutView.$el.html().should.eql('<div class="destination"><div class="test1"></div><hr></div>');
 
-            layoutView.partial(method, selector, index+1, total, $insert2);
+            layoutView._partial(method, selector, index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="destination"><div class="test2"></div><div class="test1"></div><hr></div>');
         });
 
         it('should add the view by append', function() {
             var method = 'append';
 
-            layoutView.partial(method, selector, index, total, $insert1);
+            layoutView._partial(method, selector, index, total, $insert1);
             layoutView.$el.html().should.eql('<div class="destination"><hr><div class="test1"></div></div>');
 
-            layoutView.partial(method, selector, index+1, total, $insert2);
+            layoutView._partial(method, selector, index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="destination"><hr><div class="test1"></div><div class="test2"></div></div>');
         });
 
         it('should add the view before', function() {
             var method = 'before';
 
-            layoutView.partial(method, selector, index, total, $insert1);
+            layoutView._partial(method, selector, index, total, $insert1);
             layoutView.$el.html().should.eql('<div class="test1"></div><div class="destination"><hr></div>');
 
-            layoutView.partial(method, selector, index+1, total, $insert2);
+            layoutView._partial(method, selector, index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="test1"></div><div class="test2"></div><div class="destination"><hr></div>');
         });
 
         it('should add the view after', function() {
             var method = 'after';
 
-            layoutView.partial(method, selector, index, total, $insert1);
+            layoutView._partial(method, selector, index, total, $insert1);
             layoutView.$el.html().should.eql('<div class="destination"><hr></div><div class="test1"></div>');
 
-            layoutView.partial(method, selector, index+1, total, $insert2);
+            layoutView._partial(method, selector, index+1, total, $insert2);
             layoutView.$el.html().should.eql('<div class="destination"><hr></div><div class="test2"></div><div class="test1"></div>');
         });
     });

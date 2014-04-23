@@ -203,224 +203,229 @@
         }
     });
 
-    Assembler.LayoutView = (function() {
-        var LayoutView = Assembler.View.extend({
-            viewEvents: null,
+    Assembler.LayoutView = Assembler.View.extend({
+        viewEvents: null,
 
-            constructor: function(options) {
-                this.options = options || (options = {});
+        constructor: function(options) {
+            this.options = options || (options = {});
 
-                this.views = [];
-                this._views = [];
-                this._totals = new Counter();
+            this.views = [];
+            this._byDestination = {};
 
-                Assembler.View.prototype.constructor.call(this, options);
-            },
-            initialize: function(options) {
-                Assembler.View.prototype.initialize.call(this, options);
+            Assembler.View.prototype.constructor.call(this, options);
+        },
+        initialize: function(options) {
+            Assembler.View.prototype.initialize.call(this, options);
 
-                _.extend(this, _.pick(options, 'viewEvents'));
+            _.extend(this, _.pick(options, 'viewEvents'));
 
-                if (options.views) {
-                    this.resetViews(options.views);
-                }
-            },
+            if (options.views) {
+                this.resetViews(options.views);
+            }
+        },
 
-            delegateViewEvents: function(view) {
-                this._listenToEvents(view, _.result(this, 'viewEvents'));
-            },
-            undelegateViewEvents: function(view) {
-                this.stopListening(view);
-            },
+        delegateViewEvents: function(view) {
+            this._listenToEvents(view, _.result(this, 'viewEvents'));
+        },
+        undelegateViewEvents: function(view) {
+            this.stopListening(view);
+        },
 
-            addView: function(destination, view) {
-                var match = destination.match(destinationSplitter),
-                    method = match[1],
-                    selector = match[2];
+        getView: function(destination, index) {
+            index || (index = 0);
 
-                var child = {
-                    destination: destination,
-                    view: view,
-                    method: method,
-                    selector: selector,
-                    index: this._totals.increase(method, selector)
-                };
+            var match = destination.match(destinationSplitter),
+                method = match[1],
+                selector = match[2];
 
-                this._add(child);
+            if (typeof this._byDestination[selector] === 'object' && typeof this._byDestination[selector][method] === 'object') {
+                return this._byDestination[selector][method][index];
+            }
+        },
+        addView: function(destination, index, viewToAdd) {
+            if (typeof index === 'object') {
+                viewToAdd = index;
+                index = null;
+            }
 
-                return view;
-            },
-            removeView: function(destination) {
-                var child = this._find(destination)[0];
-                if (child) {
-                    return this._remove(child);
-                }
-            },
-            getView: function(destination) {
-                var child = this._find(destination)[0];
-                if (child) {
-                    return child.view;
-                }
-            },
-            resetViews: function(viewsToAdd) {
-                _.each(this._views, this._remove, this);
-                _.each(viewsToAdd, function(view, destination) {
-                    this.addView(destination, view);
+            var match = destination.match(destinationSplitter),
+                method = match[1],
+                selector = match[2];
+
+            this._prepareForAdd(viewToAdd);
+
+            this._byDestination[selector] || (this._byDestination[selector] = {});
+            this._byDestination[selector][method] || (this._byDestination[selector][method] = []);
+            if (typeof index === 'number') {
+                this._byDestination[selector][method].splice(index, 0, viewToAdd);
+            } else {
+                this._byDestination[selector][method].push(viewToAdd);
+            }
+            this.views.push(viewToAdd);
+
+            return viewToAdd;
+        },
+        removeView: function(destination, index) {
+            var viewToRemove = (typeof destination === 'string') ? this.getView(destination, index) : destination;
+            if (viewToRemove) {
+                var done;
+                _.each(this._byDestination, function(byMethod, selector) {
+                    _.each(byMethod, function(views, method) {
+                        _.each(views, function(view, index) {
+                            if (view === viewToRemove) {
+                                this._prepareForRemove(viewToRemove);
+
+                                this._byDestination[selector][method].splice(index, 1);
+                                this.views = _.without(this.views, viewToRemove);
+                                return false;
+                            }
+                        }, this);
+                    }, this);
                 }, this);
-            },
+            }
+        },
+        resetViews: function(viewsToAdd) {
+            _.each(this.views, this.removeView, this);
+            _.each(viewsToAdd, function(view, destination) {
+                this.addView(destination, view);
+            }, this);
+        },
+        findViews: function(destination) {
+            var match = destination.match(destinationSplitter),
+                method = match[1],
+                selector = match[2];
 
-            _find: function(destination) {
-                var filterBy = (_.isString(destination)) ? 'destination' : 'view';
-                return _.filter(this._views, function(child) {
-                    return child[filterBy] === destination;
+            if (typeof this._byDestination[selector] === 'object' && typeof this._byDestination[selector][method] === 'object') {
+                return this._byDestination[selector][method].slice(0);
+            }
+            return [];
+        },
+        indexOf: function(view) {
+            var result = -1;
+            _.each(this._byDestination, function(byMethod, selector) {
+                _.each(byMethod, function(views, method) {
+                    return (result = _.indexOf(views, view)) !== -1;
                 });
-            },
-            _add: function(childToAdd) {
-                this._views.push(childToAdd);
-                this.views.push(childToAdd.view);
-                childToAdd.view.parentView = this;
-                this.delegateViewEvents(childToAdd.view);
-            },
-            _remove: function(childToRemove) {
-                if (_.indexOf(this._views, childToRemove) != -1) {
-                    // Update counter total
-                    this._totals.decrease(childToRemove.method, childToRemove.selector);
+                return result !== -1;
+            });
+            return result;
+        },
+        
+        _prepareForAdd: function(view) {
+            view.parentView = this;
+            this.delegateViewEvents(view);
+        },
+        _prepareForRemove: function(view) {
+            if (view.parentView === this) {
+                delete view.parentView;
+            }
+            this.undelegateViewEvents(view);
+            view.remove();
+        },
 
-                    // Update child indexes
-                    _.each(this._views, function(child) {
-                        if (child.index > childToRemove.index && child.method === childToRemove.method && child.selector === childToRemove.selector) {
-                            child.index--;
+        ready: function(options) {
+            var basePromise = Assembler.View.prototype.ready.call(this, options);
+            var layoutPromises = [];
+            _.each(this.views, function(view) {
+                layoutPromises.push(view.ready());
+            }, this);
+            return basePromise.then(function() {
+                return $.when.apply($.when, layoutPromises);
+            });
+        },
+        swapView: function(destination, index, viewToAdd) {
+            if (typeof index === 'object') {
+                viewToAdd = index;
+                index = null;
+            }
+            var that = this;
+            return viewToAdd.ready().done(function() {
+                that.removeView(destination, index);
+                that.addView(destination, viewToAdd);
+                that.renderViews();
+            });
+        },
+
+        _partial: function(method, selector, index, total, $insert) {
+            $el = (selector) ? this.$el.find(selector) : this.$el;
+            return partialMethods[method].call(this, $el, index, total, $insert);
+        },
+
+        render: function(options) {
+            return this.renderElement(options).renderViews(options).renderState(options);
+        },
+        renderViews: function(options) {
+            _.each(this._byDestination, function(byMethod, selector) {
+                _.each(byMethod, function(views, method) {
+                    var total = views.length;
+                    _.each(views, function(view, index) {
+                        this._partial(method, selector, index, total, view.render(options).$el);
+                        view.delegateEvents();
+                    }, this);
+                }, this);
+            }, this);
+            return this;
+        },
+
+        attach: function(element) {
+            return this.attachElement(element).attachViews().attachState();
+        },
+        attachViews: function() {
+            _.each(this._byDestination, function(byMethod, selector) {
+                _.each(byMethod, function(views, method) {
+                    var total = views.length;
+                    _.each(views, function(view, index) {
+                        var $el = this._partial(method, selector, index, total);
+                        if ($el[0]) {
+                            view.attach($el);
                         }
-                    });
-
-                    // Remove
-                    this._views = _.without(this._views, childToRemove);
-                    this.views = _.without(this.views, childToRemove.view);
-                    if (childToRemove.view.parentView === this) {
-                        delete childToRemove.view.parentView;
-                    }
-                    this.undelegateViewEvents(childToRemove.view);
-                    childToRemove.view.remove();
-                }
-            },
-
-            ready: function(options) {
-                var basePromise = Assembler.View.prototype.ready.call(this, options);
-                var layoutPromises = [];
-                _.each(this.views, function(view) {
-                    layoutPromises.push(view.ready());
+                    }, this);
                 }, this);
-                return basePromise.then(function() {
-                    return Backbone.$.when.apply(Backbone.$.when, layoutPromises);
-                });
-            },
-            swapView: function(destination, viewToAdd) {
-                var viewToRemove = this.getView(destination);
-                var view = this;
-                return viewToAdd.ready().done(function() {
-                    view.removeView(viewToRemove);
-                    view.addView(destination, viewToAdd);
-                    view.renderViews();
-                });
-            },
+            }, this);
+            return this;
+        }
+    });
 
-            partial: function(method, selector, index, total, $insert) {
-                $el = (selector) ? this.$el.find(selector) : this.$el;
-                return partialMethods[method].call(this, $el, index, total, $insert);
-            },
-
-            render: function(options) {
-                return this.renderElement(options).renderViews(options).renderState(options);
-            },
-            renderViews: function(options) {
-                _.each(this._views, function(child) {
-                    var total = this._totals.get(child.method, child.selector);
-                    this.partial(child.method, child.selector, child.index, total, child.view.render(options).$el);
-                    child.view.delegateEvents();
-                }, this);
-                return this;
-            },
-
-            attach: function(element) {
-                return this.attachElement(element).attachViews().attachState();
-            },
-            attachViews: function() {
-                _.each(this._views, function(child) {
-                    var total = this._totals.get(child.method, child.selector);
-                    var $el = this.partial(child.method, child.selector, child.index, total);
-                    if ($el[0]) {
-                        child.view.attach($el);
-                    }
-                }, this);
-                return this;
+    var destinationSplitter = /^(inner|outer|prepend|append|before|after)\s*(.*)\s*$/i;
+    var partialMethods = {
+        inner: function($el, index, total, $insert) {
+            if ($insert) {
+                return $el.empty().append($insert);
             }
-        });
-
-        var destinationSplitter = /^(inner|outer|prepend|append|before|after)\s*(.*)$/i;
-        var partialMethods = {
-            inner: function($el, index, total, $insert) {
-                if ($insert) {
-                    return $el.empty().append($insert);
-                }
-                return $el.children().first();
-            },
-            outer: function($el, index, total, $insert) {
-                // replaceWith would remove the DOM element if $insert and $el are identical
-                if ($insert && $insert[0] !== $el[0]) {
-                    return $el.replaceWith($insert);
-                }
-                return $el;
-            },
-            prepend: function($el, index, total, $insert) {
-                if ($insert) {
-                    return $el.prepend($insert);
-                }
-                return $el.children().eq(total-1-index);
-            },
-            append: function($el, index, total, $insert) {
-                if ($insert) {
-                    return $el.append($insert);
-                }
-                return $el.children().eq(index-total);
-            },
-            before: function($el, index, total, $insert) {
-                if ($insert) {
-                    return $el.before($insert);
-                }
-                return $el.prevAll().eq(total-1-index);
-            },
-            after: function($el, index, total, $insert) {
-                if ($insert) {
-                    return $el.after($insert);
-                }
-                return $el.nextAll().eq(total-1-index);
+            return $el.children().first();
+        },
+        outer: function($el, index, total, $insert) {
+            // replaceWith would remove the DOM element if $insert and $el are identical
+            if ($insert && $insert[0] !== $el[0]) {
+                return $el.replaceWith($insert);
             }
-        };
-
-        function Counter() {
-            this.counts = {};
-        };
-        Counter.prototype.key = function() {
-            var args = Array.prototype.slice.call(arguments);
-            return args.join('/');
-        };
-        Counter.prototype.increase = function() {
-            var key = this.key.apply(this, arguments);
-            this.counts[key] || (this.counts[key] = 0);
-            return this.counts[key]++;
-        };
-        Counter.prototype.decrease = function() {
-            var key = this.key.apply(this, arguments);
-            this.counts[key] || (this.counts[key] = 0);
-            return --this.counts[key];
-        };
-        Counter.prototype.get = function() {
-            var key = this.key.apply(this, arguments);
-            return this.counts[key] || 0;
-        };
-
-        return LayoutView;
-    })();
+            return $el;
+        },
+        prepend: function($el, index, total, $insert) {
+            if ($insert) {
+                return $el.prepend($insert);
+            }
+            return $el.children().eq(total-1-index);
+        },
+        append: function($el, index, total, $insert) {
+            if ($insert) {
+                return $el.append($insert);
+            }
+            return $el.children().eq(index-total);
+        },
+        before: function($el, index, total, $insert) {
+            if ($insert) {
+                return $el.before($insert);
+            }
+            return $el.prevAll().eq(total-1-index);
+        },
+        after: function($el, index, total, $insert) {
+            if ($insert) {
+                return $el.after($insert);
+            }
+            return $el.nextAll().eq(total-1-index);
+        }
+    };
 
     Assembler.ListView = Assembler.LayoutView.extend({
         itemDestination: 'append',
@@ -456,37 +461,33 @@
 
         createItemView: function(model) {
             return new this.itemView({
+                app: this.app,
                 model: model
             });
         },
-        addItemView: function(model) {
-            return this.addView(this.itemDestination, this.createItemView(model));
+        addItemView: function(model, collection, options) {
+            return this.addView(this.itemDestination, typeof options === 'object' ? options.at : undefined, this.createItemView(model));
         },
         removeItemView: function(model) {
-            return this.removeView(model);
+            return this.removeView(this.getItemView(model));
         },
-        getItemView: function(model) {
-            return this.getView(model);
+        getItemView: function(index) {
+            if (index instanceof Backbone.Model) {
+                return _.find(this.views, function(view) {
+                    return view.model === index;
+                });
+            }
+            return this.getView(this.itemDestination, index);
         },
         resetItemViews: function(collection) {
             // Items have been reset completely
-            _.each(this._find(this.itemDestination), this._remove, this);
+            _.each(this.findViews(this.itemDestination), this.removeView, this);
             collection.each(this.addItemView, this);
         },
         sortItemViews: function(collection) {
             // Same list of items but indexes have changed
             // TODO: make this less destructive
             this.resetItemViews(collection);
-        },
-
-        // Override private _find method to support passing models to getView/removeView
-        _find: function(destination) {
-            if (destination instanceof Backbone.Model) {
-                return _.filter(this._views, function(child) {
-                    return child.view.model === destination;
-                });
-            } 
-            return Assembler.LayoutView.prototype._find.call(this, destination);
         }
     });
 
