@@ -268,7 +268,7 @@
         removeView: function(destination, index) {
             var viewToRemove = (typeof destination === 'string') ? this.getView(destination, index) : destination;
             if (viewToRemove) {
-                var done;
+                var keepIterating;
                 _.each(this._byDestination, function(byMethod, selector) {
                     _.each(byMethod, function(views, method) {
                         _.each(views, function(view, index) {
@@ -277,10 +277,13 @@
 
                                 this._byDestination[selector][method].splice(index, 1);
                                 this.views = _.without(this.views, viewToRemove);
-                                return false;
+                                
+                                return keepIterating = false;
                             }
                         }, this);
+                        return keepIterating;
                     }, this);
+                    return keepIterating;
                 }, this);
             }
         },
