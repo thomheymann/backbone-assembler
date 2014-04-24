@@ -104,16 +104,16 @@
         promiseCoupler: function(promise, options) {
             return promise;
         },
-        swapModel: function(model) {
+        swapModel: function(model, options) {
             var view = this;
-            return model.fetch().done(function() {
+            return model.fetch(options).done(function() {
                 view.setModel(model);
                 view.render();
             });
         },
-        swapCollection: function(collection) {
+        swapCollection: function(collection, options) {
             var view = this;
-            return collection.fetch().done(function() {
+            return collection.fetch(options).done(function() {
                 view.setCollection(collection);
                 view.render();
             });
@@ -333,13 +333,14 @@
                 return $.when.apply($.when, layoutPromises);
             });
         },
-        swapView: function(destination, index, viewToAdd) {
+        swapView: function(destination, index, viewToAdd, options) {
             if (typeof index === 'object') {
+                options = viewToAdd;
                 viewToAdd = index;
                 index = null;
             }
             var that = this;
-            return viewToAdd.ready().done(function() {
+            return viewToAdd.ready(options).done(function() {
                 that.removeView(destination, index);
                 that.addView(destination, viewToAdd);
                 that.renderViews();
