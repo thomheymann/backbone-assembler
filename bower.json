@@ -1,6 +1,6 @@
 {
     "name": "backbone-assembler",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "main": "assembler.js",
     "dependencies": {
         "backbone": ">= 1.0",

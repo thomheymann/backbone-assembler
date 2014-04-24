@@ -1,6 +1,6 @@
 {
     "name": "backbone-assembler",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Plugin for Backbone that makes it easy to manage nested views", 
     "keywords": ["backbone", "nested", "view", "layout", "server", "client", "browser"],
     "author": "Thomas Heymann <thomas.heymann@net-a-porter.com",
