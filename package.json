@@ -8,7 +8,7 @@
         "Thomas Lillington <thomas.lillington@net-a-porter.com>",
         "Thomas Minton <thomas.minton@net-a-porter.com>"
     ],
-    "license": "Apache",
+    "license": "Apache-2.0",
     "dependencies": {
         "backbone": ">= 1.0",
         "underscore"  : ">= 1.5"
